@@ -1,13 +1,19 @@
+import { HomePageInfo } from 'components/App.styled';
 import { NavLinkStyled } from 'components/AuthNav/AuthNav.styled';
 
 const HomePage = () => {
   return (
-    <main>
-      <h1>You must be logged in to view your contact list</h1>
+    <HomePageInfo>
+      <h1>
+        PhoneBook welcome page{' '}
+        <span role="img" aria-label="Greeting icon">
+          💁‍♀️
+        </span>
+      </h1>
       <div>
-        Go to <NavLinkStyled to="/login">LogIn</NavLinkStyled> page
+        Go to <NavLinkStyled to="/login">LogIn</NavLinkStyled>
       </div>
-    </main>
+    </HomePageInfo>
   );
 };
 

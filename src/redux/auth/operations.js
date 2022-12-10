@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { Notify } from 'notiflix';
 
 axios.defaults.baseURL = 'https://connections-api.herokuapp.com/';
 
@@ -28,6 +29,15 @@ export const register = createAsyncThunk(
       console.log(res);
       return res.data;
     } catch (error) {
+      Notify.failure('User is already exist');
+
+      if (error.response.status === 400) {
+        Notify.failure('User is already exist');
+      } else if (error.response.status === 500) {
+        Notify.failure('Oops! Server error! Please try later!');
+      } else {
+        Notify.failure('Something went wrong!');
+      }
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -46,6 +56,7 @@ export const logIn = createAsyncThunk(
       setAuthHeader(res.data.token);
       return res.data;
     } catch (error) {
+      Notify.failure('Incorrect email or password! Try again!');
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -61,6 +72,10 @@ export const logOut = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
     await axios.post('/users/logout');
     clearAuthHeader();
   } catch (error) {
+    if (error.response.status === 500) {
+      Notify.failure('Oops! Server error! Please try later!');
+    }
+    Notify.failure('Something went wrong! Please reload the page!');
     return thunkAPI.rejectWithValue(error.message);
   }
 });
@@ -88,6 +103,14 @@ export const refreshUser = createAsyncThunk(
       const res = await axios.get('/users/current');
       return res.data;
     } catch (error) {
+      clearAuthHeader();
+      if (error.response.status === 401) {
+        Notify.failure(
+          'something went wrong, user unauthorized. Please, try again'
+        );
+        return thunkAPI.rejectWithValue(error.response.data.message);
+      }
+      Notify.failure('something went wrong, please, try again');
       return thunkAPI.rejectWithValue(error.message);
     }
   }

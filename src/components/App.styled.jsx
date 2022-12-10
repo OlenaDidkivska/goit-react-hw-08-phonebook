@@ -14,3 +14,8 @@ export const PhonebookContainer = styled.div`
 export const ContactsMassage = styled.p`
   padding: 20px;
 `;
+
+export const HomePageInfo = styled.div`
+    text-align: center
+}
+`;
