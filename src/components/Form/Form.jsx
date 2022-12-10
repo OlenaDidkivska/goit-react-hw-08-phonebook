@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/operations';
+import { addContact } from 'redux/contacts/operations';
 
 import { nanoid } from 'nanoid';
 import {
@@ -11,7 +11,7 @@ import {
   ErrorText,
   Form,
 } from './Form.styled';
-import { selectContacts } from 'redux/selectors';
+import { selectContacts } from 'redux/contacts/selectors';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const nameId = nanoid();

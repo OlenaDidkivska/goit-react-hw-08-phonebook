@@ -1,10 +1,19 @@
 import { createSlice, isAnyOf } from '@reduxjs/toolkit';
-
+import { logOut } from 'redux/auth/operations';
 import { fetchContacts, addContact, deleteContact } from './operations';
 
-const extraActions = [fetchContacts, addContact, deleteContact];
+const extraActions = [fetchContacts, addContact, deleteContact, logOut];
 
 const getActions = type => extraActions.map(action => action[type]);
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
 
 const contactsSlice = createSlice({
   name: 'contacts',
@@ -29,12 +38,14 @@ const contactsSlice = createSlice({
         );
         state.items.splice(index, 1);
       })
+      .addCase(logOut.fulfilled, state => {
+        state.items = [];
+      })
       .addMatcher(isAnyOf(...getActions('pending')), state => {
-        state.isLoading = true;
+        handlePending(state);
       })
       .addMatcher(isAnyOf(...getActions('rejected')), (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+        handleRejected(state, action);
       })
       .addMatcher(isAnyOf(...getActions('fulfilled')), state => {
         state.isLoading = false;

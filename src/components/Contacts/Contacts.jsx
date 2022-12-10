@@ -1,7 +1,7 @@
 import { ContactItem, ContactNumber, FilterButton } from './Contacts.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectVisibleContacts } from 'redux/selectors';
-import { deleteContact } from 'redux/operations';
+import { selectVisibleContacts } from 'redux/contacts/selectors';
+import { deleteContact } from 'redux/contacts/operations';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 export const Contacts = () => {

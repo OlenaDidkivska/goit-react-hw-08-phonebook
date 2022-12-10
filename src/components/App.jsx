@@ -1,42 +1,63 @@
-import { Contacts } from './Contacts/Contacts';
-import { ContactForm } from './Form/Form';
-import Filter from './Filter/Filter';
+import { lazy, useEffect } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 
-import { ContactsMassage, PhonebookContainer } from './App.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectContacts, selectError, selectIsLoading } from 'redux/selectors';
-import { useEffect } from 'react';
-import { fetchContacts } from 'redux/operations';
+import { Layout } from './Layout';
+import { useDispatch } from 'react-redux';
+import { useAuth } from 'hooks/useAuth';
+import { refreshUser } from 'redux/auth/operations';
+import { RestrictedRoute } from './RestrictedRoute';
+import { NotFound } from 'pages/NotFound';
 import Loader from './Loader/Loader';
+import { PrivateRoute } from './PrivateRoute';
+
+const HomePage = lazy(() => import('../pages/HomePage'));
+const RegisterPage = lazy(() => import('../pages/RegisterPage'));
+const LogInPage = lazy(() => import('../pages/LoginPage'));
+const ContactsPage = lazy(() => import('../pages/ContactsPage'));
 
 export default function App() {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
-  const error = useSelector(selectError);
-  const isLoading = useSelector(selectIsLoading);
+  const { isRefreshing } = useAuth();
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(refreshUser());
   }, [dispatch]);
 
-  return (
-    <PhonebookContainer>
-      <h1>Phonebook</h1>
-      <ContactForm />
-      <h2>Contacts</h2>
-      {isLoading && <Loader />}
-      {contacts?.length > 0 ? (
-        !error && (
-          <>
-            <Filter />
-            <Contacts />
-          </>
-        )
-      ) : (
-        <ContactsMassage>
-          Your phonebook is empty, add your first contact
-        </ContactsMassage>
-      )}
-    </PhonebookContainer>
+  return isRefreshing ? (
+    <Loader />
+  ) : (
+    <HelmetProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route
+            path="/register"
+            element={
+              <RestrictedRoute
+                redirectTo="/contacts"
+                component={<RegisterPage />}
+              />
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <RestrictedRoute
+                redirectTo="/contacts"
+                component={<LogInPage />}
+              />
+            }
+          />
+          <Route
+            path="/contacts"
+            element={
+              <PrivateRoute redirectTo="/login" component={<ContactsPage />} />
+            }
+          />
+        </Route>
+        <Route path="*" element={<NotFound />}></Route>
+      </Routes>
+    </HelmetProvider>
   );
 }
