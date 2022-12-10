@@ -2,7 +2,6 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { styled } from '@mui/material/styles';
 import MuiGrid from '@mui/material/Grid';
-import Divider from '@mui/material/Divider';
 import { NavLinkStyled } from 'components/AuthNav/AuthNav.styled';
 
 export const Navigation = () => {
